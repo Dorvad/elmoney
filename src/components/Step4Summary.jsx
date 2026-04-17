@@ -3,7 +3,6 @@ import { calcTotal, formatMoney } from '../utils'
 import {
   ProgressIndicator, StepHeader, LiveSummaryStrip, NavButtons
 } from './shared'
-import EnvelopeCard from './EnvelopeCard'
 
 function PaperBlock({ icon, title, children }) {
   return (
@@ -63,8 +62,6 @@ export default function Step4Summary({
             <Val big>{formatMoney(smallTotal)} ₪</Val>
           </PaperRow>
         </PaperBlock>
-
-        <EnvelopeCard />
 
         <PaperBlock icon="✉️" title="לרישום על מעטפת המזומנים">
           <PaperRow label="כסף במעטפה">

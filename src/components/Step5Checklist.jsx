@@ -1,4 +1,3 @@
-import envBack from '../../Env_back.png'
 import { CHECKLIST_ITEMS } from '../constants'
 import { ProgressIndicator, StepHeader, NavButtons } from './shared'
 
@@ -42,43 +41,26 @@ export default function Step5Checklist({ checklist, onToggle, onBack, onFinish }
           {CHECKLIST_ITEMS.length}
           {' סעיפים הושלמו'}
         </div>
-
-        {/* Sealed envelope — appears when all items are checked */}
-        {allDone && (
-          <div className="env-sealed-card">
-            <img
-              src={envBack}
-              className="env-sealed-img"
-              alt="מעטפה מוכנה"
-            />
-            <div className="env-sealed-overlay">
-              <span className="env-sealed-check">✓</span>
-              <span className="env-sealed-text">מוכן לכספת</span>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="step-fixed-bottom">
         <div className="nav-buttons">
           <button className="btn-back" onClick={onBack}>חזור</button>
           <button
-            className="btn-finish"
+            className={`btn-finish ${!allDone ? '' : ''}`}
             style={{
               flex: 1,
               padding: '15px',
-              background: allDone
-                ? 'linear-gradient(135deg, var(--success), #4aaa86)'
-                : 'linear-gradient(135deg, var(--accent), var(--accent-dark))',
+              background: allDone ? 'var(--success)' : 'var(--accent)',
               border: 'none',
               borderRadius: 'var(--radius)',
               color: '#fff',
               fontSize: '16px',
               fontWeight: '700',
               boxShadow: allDone
-                ? '0 3px 16px rgba(90,184,150,0.35)'
-                : '0 3px 14px var(--accent-glow)',
-              transition: 'background 0.4s, box-shadow 0.4s',
+                ? '0 3px 16px rgba(76,188,138,0.3)'
+                : '0 3px 16px rgba(91,141,238,0.3)',
+              transition: 'background 0.3s, box-shadow 0.3s',
               fontFamily: 'inherit',
               cursor: 'pointer',
             }}
