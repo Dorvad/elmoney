@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>סגירת קופה — Widget Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Rubik', 'Segoe UI', sans-serif;
+      background: #0a0d14;
+      color: #d8dce8;
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* ── Portal layout ── */
+    .portal {
+      display: grid;
+      grid-template-rows: 56px 1fr;
+      grid-template-columns: 210px 1fr;
+      min-height: 100vh;
+    }
+
+    /* ── Topbar ── */
+    .topbar {
+      grid-column: 1 / -1;
+      background: #10141f;
+      border-bottom: 1px solid #1e2438;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 14px;
+    }
+    .topbar-logo {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 15px; font-weight: 700; color: #eef0f8;
+    }
+    .topbar-logo-icon {
+      width: 32px; height: 32px;
+      background: #5b8dee20; border: 1px solid #5b8dee40;
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+      font-size: 16px;
+    }
+    .topbar-divider { width: 1px; height: 20px; background: #1e2438; }
+    .topbar-page    { font-size: 13px; color: #4a5470; font-weight: 500; }
+    .topbar-right   { margin-right: auto; display: flex; align-items: center; gap: 12px; }
+    .topbar-badge {
+      font-size: 11px; background: #5b8dee18; color: #5b8dee;
+      border: 1px solid #5b8dee40; border-radius: 20px; padding: 3px 10px; font-weight: 700;
+    }
+    .avatar {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: linear-gradient(135deg, #5b8dee, #8b5dee);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: white; font-weight: 700;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #0d1120; border-left: 1px solid #1e2438;
+      padding: 16px 10px; display: flex; flex-direction: column; gap: 2px;
+    }
+    .sidebar-section {
+      font-size: 10px; font-weight: 700; color: #2e3650;
+      text-transform: uppercase; letter-spacing: 0.8px; padding: 12px 12px 5px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 8px;
+      font-size: 13px; color: #4a5470; cursor: pointer;
+      font-weight: 500; transition: background .15s, color .15s;
+      text-decoration: none;
+    }
+    .sidebar-item:hover  { background: #161c2e; color: #8b96b0; }
+    .sidebar-item.active { background: #5b8dee18; color: #5b8dee; }
+    .sidebar-icon { font-size: 15px; width: 20px; text-align: center; }
+
+    /* ── Main ── */
+    .main-content { padding: 32px 36px; overflow-y: auto; }
+
+    .page-title    { font-size: 22px; font-weight: 700; color: #eef0f8; margin-bottom: 4px; }
+    .page-subtitle { font-size: 14px; color: #4a5470; margin-bottom: 28px; }
+
+    /* ── Stat cards ── */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 14px; margin-bottom: 32px;
+    }
+    .stat-card {
+      background: #10141f; border: 1px solid #1e2438; border-radius: 14px; padding: 18px 20px;
+    }
+    .stat-label { font-size: 11px; color: #3a4460; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+    .stat-value { font-size: 24px; font-weight: 800; color: #eef0f8; direction: ltr; }
+    .stat-note  { font-size: 12px; color: #4cbc8a; margin-top: 4px; }
+
+    /* ── Widget demo grid ── */
+    .demo-grid {
+      display: grid; grid-template-columns: 1fr 380px;
+      gap: 28px; align-items: start;
+    }
+
+    .section-eyebrow {
+      font-size: 11px; font-weight: 700; color: #5b8dee;
+      text-transform: uppercase; letter-spacing: .8px; margin-bottom: 14px;
+    }
+
+    /* Mode tabs */
+    .mode-tabs {
+      display: flex; gap: 0;
+      background: #10141f; border: 1px solid #1e2438;
+      border-radius: 10px; padding: 4px; width: fit-content; margin-bottom: 18px;
+    }
+    .mode-tab {
+      padding: 8px 18px; border-radius: 7px;
+      font-size: 13px; font-weight: 600; color: #4a5470;
+      cursor: pointer; border: none; background: transparent;
+      font-family: 'Rubik', sans-serif; transition: all .15s;
+    }
+    .mode-tab.active { background: #5b8dee; color: #fff; }
+
+    /* Notice */
+    .notice {
+      background: #c9a84c14; border: 1px solid #c9a84c40;
+      border-radius: 10px; padding: 11px 15px;
+      font-size: 13px; color: #c9a84c; margin-bottom: 18px;
+      display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+    }
+
+    /* Inline widget display area */
+    #float-info {
+      padding: 48px 0; text-align: center; color: #3a4460;
+      border: 1.5px dashed #1e2438; border-radius: 18px;
+    }
+    #float-info .fi-icon { font-size: 36px; margin-bottom: 12px; }
+    #float-info .fi-title { font-weight: 600; color: #6b7890; margin-bottom: 6px; }
+    #float-info .fi-sub   { font-size: 13px; }
+
+    /* ── Code panel ── */
+    .code-panel {
+      background: #10141f; border: 1px solid #1e2438;
+      border-radius: 16px; overflow: hidden;
+      position: sticky; top: 32px;
+    }
+    .code-tab-bar {
+      display: flex; border-bottom: 1px solid #1e2438; background: #0d1120;
+    }
+    .code-tab {
+      padding: 10px 16px; font-size: 13px; font-weight: 600; color: #4a5470;
+      cursor: pointer; border-bottom: 2px solid transparent; transition: color .15s;
+      border: none; background: transparent; font-family: 'Rubik', sans-serif;
+    }
+    .code-tab.active { color: #5b8dee; border-bottom: 2px solid #5b8dee; }
+
+    .code-block {
+      padding: 18px; direction: ltr; text-align: left;
+      font-family: 'Menlo','Monaco','Courier New',monospace;
+      font-size: 12.5px; line-height: 1.7; color: #8b96b8;
+      white-space: pre; overflow-x: auto;
+    }
+    .kw  { color: #c792ea; }
+    .str { color: #c3e88d; }
+    .cm  { color: #4a5e6a; font-style: italic; }
+    .tag { color: #89ddff; }
+    .att { color: #ffcb6b; }
+    .val { color: #c3e88d; }
+
+    .copy-btn {
+      display: flex; align-items: center; gap: 6px;
+      margin: 0 18px 16px;
+      padding: 8px 14px;
+      background: #5b8dee18; border: 1px solid #5b8dee40;
+      border-radius: 8px; color: #5b8dee;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Rubik', sans-serif;
+      transition: background .15s;
+    }
+    .copy-btn:hover { background: #5b8dee28; }
+
+    .tab-pane         { display: none; }
+    .tab-pane.visible { display: block; }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      .portal { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .demo-grid { grid-template-columns: 1fr; }
+      .code-panel { position: static; }
+      .stats-row  { grid-template-columns: 1fr 1fr; }
+      .main-content { padding: 20px; }
+    }
+    @media (max-width: 560px) {
+      .stats-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="portal">
+  <header class="topbar">
+    <div class="topbar-logo">
+      <div class="topbar-logo-icon">🏪</div>
+      Back-Office Portal
+    </div>
+    <div class="topbar-divider"></div>
+    <span class="topbar-page">כלים תפעוליים</span>
+    <div class="topbar-right">
+      <span class="topbar-badge">Widget Demo</span>
+      <div class="avatar">מ</div>
+    </div>
+  </header>
+
+  <aside class="sidebar">
+    <div class="sidebar-section">ראשי</div>
+    <a class="sidebar-item" href="#"><span class="sidebar-icon">📊</span> לוח מחוונים</a>
+    <a class="sidebar-item" href="#"><span class="sidebar-icon">📋</span> דוחות</a>
+    <a class="sidebar-item" href="#"><span class="sidebar-icon">👥</span> עובדים</a>
+    <div class="sidebar-section">כספים</div>
+    <a class="sidebar-item active" href="#"><span class="sidebar-icon">🏧</span> סגירת קופה</a>
+    <a class="sidebar-item" href="#"><span class="sidebar-icon">📑</span> חשבוניות</a>
+  </aside>
+
+  <main class="main-content">
+    <h1 class="page-title">סגירת קופה — Widget</h1>
+    <p class="page-subtitle">הטמיעו את עוזר הסגירה בכל דף ניהולי בשתי שורות קוד</p>
+
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Bundle Size</div>
+        <div class="stat-value">~2 KB</div>
+        <div class="stat-note">elmoney-launcher.js</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Dependencies</div>
+        <div class="stat-value">0</div>
+        <div class="stat-note">pure vanilla JS</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Isolation</div>
+        <div class="stat-value">iframe</div>
+        <div class="stat-note">ללא קונפליקטים</div>
+      </div>
+    </div>
+
+    <div class="demo-grid">
+      <!-- Left: live demo -->
+      <div>
+        <div class="section-eyebrow">הדגמה חיה</div>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" onclick="setMode('inline', this)">מוטמע בדף</button>
+          <button class="mode-tab"        onclick="setMode('float',  this)">כפתור צף</button>
+        </div>
+
+        <div class="notice">
+          <span>💡</span>
+          <div>
+            <strong>מוטמע בדף</strong> — הווידג׳ט מוצג כחלק ממבנה הדף.&nbsp;
+            <strong>כפתור צף</strong> — כפתור קבוע בפינה פותח את הממשק.
+            שניהם נטענים עם קובץ אחד: <code style="font-size:12px;background:#1a2030;padding:1px 5px;border-radius:4px;">elmoney-launcher.js</code>
+          </div>
+        </div>
+
+        <!-- Inline widget target -->
+        <div id="inline-zone">
+          <div data-elmoney-widget></div>
+        </div>
+
+        <!-- Float mode placeholder -->
+        <div id="float-zone" style="display:none;">
+          <div class="float-info" id="float-info">
+            <div class="fi-icon">🏧</div>
+            <div class="fi-title">הכפתור הצף פעיל בפינה הימנית התחתונה</div>
+            <div class="fi-sub">לחצו עליו כדי לפתוח את עוזר הסגירה</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: embed code -->
+      <div>
+        <div class="section-eyebrow">קוד הטמעה</div>
+
+        <div class="code-panel">
+          <div class="code-tab-bar">
+            <button class="code-tab active" onclick="setCodeTab('c-inline', this)">Inline</button>
+            <button class="code-tab"        onclick="setCodeTab('c-float',  this)">Float</button>
+          </div>
+
+          <!-- Inline code -->
+          <div id="c-inline" class="tab-pane visible">
+            <div class="code-block"><span class="cm">&lt;!-- 1. מקום הווידג׳ט בדף --&gt;</span>
+<span class="tag">&lt;div</span> <span class="att">data-elmoney-widget</span><span class="tag">&gt;&lt;/div&gt;</span>
+
+<span class="cm">&lt;!-- 2. הוסף לפני &lt;/body&gt; --&gt;</span>
+<span class="tag">&lt;script</span>
+  <span class="att">src</span>=<span class="val">"elmoney-launcher.js"</span>
+  <span class="att">data-src</span>=<span class="val">"https://your-server.com/elmoney/"</span>
+  <span class="att">data-mode</span>=<span class="val">"inline"</span>
+<span class="tag">&gt;&lt;/script&gt;</span></div>
+            <button class="copy-btn" onclick="copy('inline')">📋 העתק קוד</button>
+          </div>
+
+          <!-- Float code -->
+          <div id="c-float" class="tab-pane">
+            <div class="code-block"><span class="cm">&lt;!-- הוסף לפני &lt;/body&gt; --&gt;</span>
+<span class="cm">&lt;!-- הכפתור הצף נוצר אוטומטית --&gt;</span>
+<span class="tag">&lt;script</span>
+  <span class="att">src</span>=<span class="val">"elmoney-launcher.js"</span>
+  <span class="att">data-src</span>=<span class="val">"https://your-server.com/elmoney/"</span>
+<span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="cm">&lt;!-- אפשרויות נוספות: --&gt;</span>
+<span class="cm">&lt;!-- data-position="bottom-left"  --&gt;</span>
+<span class="cm">&lt;!-- data-label="פתח סגירת קופה" --&gt;</span></div>
+            <button class="copy-btn" onclick="copy('float')">📋 העתק קוד</button>
+          </div>
+        </div>
+
+        <!-- Deploy guide -->
+        <div style="margin-top:20px; background:#10141f; border:1px solid #1e2438; border-radius:14px; overflow:hidden;">
+          <div style="padding:12px 16px; background:#0d1120; border-bottom:1px solid #1e2438; font-size:11px; font-weight:700; color:#3a4460; text-transform:uppercase; letter-spacing:.8px;">
+            Deploy Guide
+          </div>
+          <div style="padding:16px 18px; direction:ltr; font-size:12.5px; line-height:1.8; color:#6b7890;">
+<span style="color:#4cbc8a;">1.</span> Build the app:
+   <span style="color:#c3e88d; font-family:monospace;">npm run build</span>
+
+<span style="color:#4cbc8a;">2.</span> Upload <span style="color:#c3e88d; font-family:monospace;">dist/</span> to your server:
+   e.g. <span style="color:#c3e88d; font-family:monospace;">https://your-server.com/elmoney/</span>
+
+<span style="color:#4cbc8a;">3.</span> Copy <span style="color:#c3e88d; font-family:monospace;">elmoney-launcher.js</span> to your site.
+
+<span style="color:#4cbc8a;">4.</span> Add the embed snippet (see above).
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!--
+  ══════════════════════════════════════
+  WIDGET EMBED — this is what you'd add
+  to YOUR website to embed the widget
+  ══════════════════════════════════════
+-->
+
+<!-- Inline widget (default mode for demo) -->
+<script
+  src="elmoney-launcher.js"
+  data-src="./dist/index.html"
+  data-mode="inline"
+  id="ew-launcher-inline"
+></script>
+
+<!-- Float widget (activated when user clicks "כפתור צף" tab) -->
+<script>
+  var _floatReady = false;
+
+  function setMode(mode, btn) {
+    document.querySelectorAll('.mode-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+
+    var inlineZone = document.getElementById('inline-zone');
+    var floatZone  = document.getElementById('float-zone');
+    var fab        = document.querySelector('.ew-fab');
+    var overlay    = document.querySelector('.ew-overlay');
+
+    if (mode === 'inline') {
+      inlineZone.style.display = '';
+      floatZone.style.display  = 'none';
+      if (fab)     fab.style.display     = 'none';
+      if (overlay) overlay.style.display = 'none';
+    } else {
+      inlineZone.style.display = 'none';
+      floatZone.style.display  = '';
+      // Lazy-init float widget on first use
+      if (!_floatReady) {
+        _floatReady = true;
+        var s = document.createElement('script');
+        s.setAttribute('data-src',  './dist/index.html');
+        s.setAttribute('data-mode', 'float');
+        // Inline launcher logic (re-run for float mode)
+        document.currentScript; // reference
+        var launcher = document.getElementById('ew-launcher-inline');
+        var newLauncher = document.createElement('script');
+        newLauncher.src = 'elmoney-launcher.js';
+        newLauncher.setAttribute('data-src',  './dist/index.html');
+        newLauncher.setAttribute('data-mode', 'float');
+        document.body.appendChild(newLauncher);
+      } else {
+        if (fab) fab.style.display = '';
+      }
+    }
+  }
+
+  function setCodeTab(id, btn) {
+    document.querySelectorAll('.code-tab').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-pane').forEach(function(p) { p.classList.remove('visible'); });
+    document.getElementById(id).classList.add('visible');
+  }
+
+  var SNIPPETS = {
+    inline: '<div data-elmoney-widget></div>\n<script\n  src="elmoney-launcher.js"\n  data-src="https://your-server.com/elmoney/"\n  data-mode="inline"\n><\/script>',
+    float:  '<script\n  src="elmoney-launcher.js"\n  data-src="https://your-server.com/elmoney/"\n><\/script>',
+  };
+
+  function copy(type) {
+    navigator.clipboard && navigator.clipboard.writeText(SNIPPETS[type]).then(function() {
+      var btn = event.target;
+      var orig = btn.textContent;
+      btn.textContent = '✅ הועתק!';
+      setTimeout(function() { btn.textContent = orig; }, 1800);
+    });
+  }
+
+  // Hide float FAB by default (inline mode is shown first)
+  window.addEventListener('load', function() {
+    var fab = document.querySelector('.ew-fab');
+    if (fab) fab.style.display = 'none';
+  });
+</script>
+
+</body>
+</html>
