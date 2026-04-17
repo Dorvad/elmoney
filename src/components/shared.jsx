@@ -5,21 +5,13 @@ import { SMALL_CASH_DENOMS, ENVELOPE_DENOMS } from '../constants'
 /* ── Progress Indicator ──────────────────────────────── */
 export function ProgressIndicator({ step }) {
   const total = 5
+  const pct = Math.round((step / total) * 100)
   return (
     <div className="progress-bar">
-      {Array.from({ length: total }).map((_, i) => {
-        const num = i + 1
-        const done   = num < step
-        const active = num === step
-        return (
-          <div className="prog-seg" key={i}>
-            <div className={`prog-dot ${done ? 'done' : active ? 'active' : ''}`} />
-            {i < total - 1 && (
-              <div className={`prog-line ${done ? 'done' : ''}`} />
-            )}
-          </div>
-        )
-      })}
+      <div className="progress-track">
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <span className="progress-label">{step}/{total}</span>
     </div>
   )
 }
