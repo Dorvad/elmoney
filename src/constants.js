@@ -15,7 +15,7 @@ export const SMALL_CASH_DENOMS = [
   { key: '5',   value: 5,   label: 'מטבע 5 ₪',           img: img5   },
   { key: '2',   value: 2,   label: 'מטבע 2 ₪',           img: img2   },
   { key: '1',   value: 1,   label: 'מטבע 1 ₪',           img: img1   },
-  { key: '0.5', value: 0.5, label: 'מטבע 50 אגורות',     img: img05  },
+  { key: '0.5', value: 0.5, label: 'חצי שקל',            img: img05  },
   { key: '0.1', value: 0.1, label: 'מטבע 10 אגורות',     img: img01  },
 ]
 
@@ -34,7 +34,7 @@ export const ALL_DENOMS = [
   { key: '5',   value: 5,   label: '5 ₪',   img: img5   },
   { key: '2',   value: 2,   label: '2 ₪',   img: img2   },
   { key: '1',   value: 1,   label: '1 ₪',   img: img1   },
-  { key: '0.5', value: 0.5, label: '50 אג׳', img: img05  },
+  { key: '0.5', value: 0.5, label: 'חצי שקל', img: img05  },
   { key: '0.1', value: 0.1, label: '10 אג׳', img: img01  },
 ]
 
